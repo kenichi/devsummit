@@ -24,6 +24,19 @@ class Devsummit < Angelo::Base
     ''
   end
 
+  post '/biker_loc' do
+    msg = {
+      bikerLoc: {
+        latitude: params['latitude'],
+        longitude: params['longitude']
+      }
+    }.to_json
+    websockets.each do |ws|
+      ws.write msg
+    end
+    ''
+  end
+
   socket '/callbacks' do |ws|
     websockets << ws
     begin

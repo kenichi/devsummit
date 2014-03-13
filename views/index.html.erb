@@ -26,20 +26,42 @@ for (var i = 0; i < triggerList.triggers.length; i++) {
   locLayer.addData(geojson);
 }
 
+var bikerIcon = L.icon({ iconUrl: '/img/biker.png' });
+var biker;
+
+function showBikerAt(lat, lon) {
+  ll = new L.LatLng(lat, lon);
+  console.log(ll);
+  if (!biker) {
+    biker = L.marker(ll, {icon: bikerIcon});
+    console.log(biker);
+    biker.addTo(map);
+  } else {
+    biker.setLatLng(ll);
+  }
+}
+
 var ws = new WebSocket('ws://<%= @host %>/callbacks');
 ws.onmessage = function(msg) {
   if (msg.data != 'pong') {
     msg = JSON.parse(msg.data);
-    var triggerPolygon;
-    locLayer.eachLayer(function(layer) {
-      if (layer.feature.id == msg.triggerId) {
-       triggerPolygon = layer;
+
+    if (msg.triggerId) {
+      var triggerPolygon;
+      locLayer.eachLayer(function(layer) {
+        if (layer.feature.id == msg.triggerId) {
+         triggerPolygon = layer;
+        }
+      });
+      if (triggerPolygon) {
+        triggerPolygon.setStyle({ color: '#ff0000' });
+        setTimeout(function(){ triggerPolygon.setStyle({ color: '#00ff00' }); }, 1000 );
       }
-    });
-    if (triggerPolygon) {
-      triggerPolygon.setStyle({ color: '#ff0000' });
-      setTimeout(function(){ triggerPolygon.setStyle({ color: '#00ff00' }); }, 1000 );
+    } else if (msg.bikerLoc) {
+      console.log(msg.bikerLoc.latitude, msg.bikerLoc.longitude);
+      showBikerAt(msg.bikerLoc.latitude, msg.bikerLoc.longitude);
     }
+
   }
 }
 
