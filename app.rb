@@ -21,6 +21,7 @@ class Devsummit < Angelo::Base
     websockets.each do |ws|
       ws.write msg
     end
+    ''
   end
 
   socket '/callbacks' do |ws|
