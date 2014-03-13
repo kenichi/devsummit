@@ -29,9 +29,10 @@ for (var i = 0; i < triggerList.triggers.length; i++) {
 var ws = new WebSocket('ws://<%= @host %>/callbacks');
 ws.onmessage = function(msg) {
   if (msg.data != 'pong') {
+    msg = JSON.parse(msg);
     var triggerPolygon;
     locLayer.eachLayer(function(layer) {
-      if (layer.feature.id == msg.data) {
+      if (layer.feature.id == msg.triggerId) {
        triggerPolygon = layer;
       }
     });

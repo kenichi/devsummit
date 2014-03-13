@@ -17,8 +17,9 @@ class Devsummit < Angelo::Base
   end
 
   post '/trigger_callback' do
+    msg = { triggerId: params['trigger']['triggerId'] }.to_json
     websockets.each do |ws|
-      ws.write params['trigger']['triggerId']
+      ws.write msg
     end
   end
 
